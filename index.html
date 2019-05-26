@@ -5,105 +5,195 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Mi primer Juego</title>
+    <style>
+        #juego {
+            width: 480px;
+            height: 320px;
+            position: relative;
+        }
+        #canvas {
+            background-color: aquamarine;
+            border: 1px solid;
+        }
+        #modal {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        #boton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
+        }
+    </style>
 </head>
 <body>
-    <h1>Jugando Ando MARLON </h1>
-    <div>
-        <canvas id="lienzo"
-            width= "700";
-            height ="500";
-            style =" border: 1px solid black"></canvas>
-        
-        <button id="boton">Iniciar ó Parar</button>
-        
-        <script>
-        var canvas= document.getElementById("lienzo");
-        var ctx= canvas.getContext('2d');
-        var estado= false;
-        var bucle;
-        var boton= document.getElementById("boton");
-        boton.addEventListener("click", iniciarParar);
-    
-        // pelota
-        var px= 0;
-        var py= 0;
-        var ptamano = 20;
-        var pxDir= 4;
-        var pyDir= 4;
-    
-        function dibujarPelota() {
-            // ctx.clearRect(0,0, canvas.width, canvas.height);
-            ctx.fillStyle = "red";
-            ctx.fillRect(px,py,ptamano,ptamano);
+    <h1>Jugando Ando para MARLON </h1>
+    <div id="juego">
+        <canvas id="canvas" width="480" height="320"></canvas>
+      <div id="modal"><button id="boton">Play</button></div>
+    </div>
+    <script>
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        var vidas = 3;
+        var puntaje = 0;
+        var nivel = 0;
+        var boton = document.getElementById("boton");
+        boton.addEventListener("click", iniciarJuego);
+//ADD: mesa
+        var mw =  70;
+        var mh = 10;
+        var mx = (canvas.width/2)- (mw/2);
+        var my = 300;
+        var derecha = false;
+        var izquierda = false;
+        var velocidad = 7;
             
-        };
-        function actualizarPelota () {
-            px+= pxDir;
-            py+= pyDir;
-            
-            // requestAnimationFrame(actualizarPelota)
-      
-        }
-        
-        // fin de pelota
-    
-        // mesa
-        var anchoMesa = 80;
-        var altoMesa = 20;
-        var mx= (canvas.width/2)- anchoMesa;
-        var my= (canvas.height)-altoMesa;
-    
         function dibujarMesa() {
-            ctx.fillStyle = "blue";
-            ctx.fillRect(mx, my, anchoMesa, altoMesa);
+            ctx.fillStyle = "red";
+            ctx.fillRect(mx, my, mw, mh);
+
+        };
+        
+        function moverMesa() {
+            if (izquierda && mx < canvas.width - mw){
+                mx += velocidad;
+            }
+            if (derecha && mx> 0){
+                mx -=velocidad;
+            }
+            
+        };
+        document.addEventListener("keydown", function () {
+            if(event.keyCode == 39){
+                izquierda = true;
+            }
+            if(event.keyCode == 37){
+                derecha = true;
+            }
+        });
+        document.addEventListener("keyup", function () {
+            if(event.keyCode == 39){
+                izquierda = false;
+            }
+            if(event.keyCode == 37){
+                derecha = false;
+            }
+        });
+        function rebotaMesa() {
             
         }
-        // fin de mesa
-    
-        function colision () {
-            if (px<=0 || px>= canvas.width - ptamano){pxDir *=-1;}
-            if (py<=0 || py>=canvas.height- ptamano){pyDir *=-1;}
+//ADD: fin de la mesa
+// pelota
+        var px = 240;
+        var py = 160;
+        var r = 10;
+        var pxDir= 2;
+        var pyDir = 2;
+
+        function dibujarPelota() {
+            ctx.fillStyle = "blue";
+            ctx.beginPath();
+            ctx.arc(px, py, r, 0, Math.PI*2);
+            ctx.fill();
+        }
+
+        function moverPelota() {
+            px += pxDir;
+            py += pyDir;
+            
+            
+        }
+// fin pelota
+
+        function aumentarNivel() {
+            
         };
-        function dibujar () {
-            ctx.clearRect(0,0, canvas.width, canvas.height);
+        function dibujarInfo() {
+            ctx.fillStyle = "black";
+            ctx.fillText("Vidas Restantes: " + vidas, 5, 15);
+            ctx.fillText("nivel: "+ nivel, 430, 15);
+        }
+
+        function dibujar() {
+            ctx.clearRect(0,0, 480, 320);
             dibujarPelota();
             dibujarMesa();
+            dibujarInfo();
+            
         };
+
         function actualizar() {
-            actualizarPelota();
-        }
-     
-        function animation() {
-            actualizar ();
-            colision();
-            dibujar();
-            // x+= xDir;
-            // y+= yDir;
-            // if (x<=0 || x>=680){
-            //     xDir *=-1;
+            moverMesa();
+            moverPelota();
+        };
+
+        function colision() {
+            // if (px<=r || px >= 480-r){
+            //     pxDir = -pxDir;
+            // };
+            if (px<=0 || px>= canvas.width - r){pxDir *=-1;};
+
+            // if (py<=0){
+            //     pyDir = -pyDir;
+            // };
+            if (py<=0 /*|| py>=canvas.height- r*/){pyDir *=-1;};
+            if (py>=canvas.height- r){ 
+                if (py>mx && py <my){
+                    alert("prueba")
+                } else { alert("no paso")}
+            }
+            };
+                       
+            // if (py<=0 || py>=canvas.height- r){pyDir *=-1;};
+            // if (py >= 320 - r){
+            //     // pyDir = -pyDir;
+            //     if (!px>mx && py<my){
+            //         perderVida();
+            //     }
             // }
-            // if (y<=0 || y>=480){
-            //     yDir *=-1;
-            // }
-            bucle = requestAnimationFrame(animation)
-            // setTimeout(animation,15)
-        }
-        function iniciarParar() {
-            if (!estado){
-                estado = true;
-                animation();
+        // };
+        function perderVida() {
+            if (vidas>0){
+                alert("Perdiste 1 Vida");
+                vidas --;
             }else {
-                estado = false;
-                cancelAnimationFrame(bucle);
+                alert ("Se Acabó")
+             finJuego();   
             }
         }
-        
-        // setInterval(animation, 15)
-    
-       </script>
-      
-    </div>
+
+        function animacion() {
+            actualizar();
+            colision();
+            dibujar();
+            requestAnimationFrame(animacion);
+        }
+
+        function iniciarJuego() {
+            var modal= document.getElementById("modal");
+            modal.style.display = "none";
+            animacion();
+        }
+
+        function finJuego() {
+            document.location.reload();
+        }
+    </script>
+   
 </body>
 </html>
+
+ <!-- PENDIENTES: no esta detectando colision con mesa, debo revisar -->
+
+
+
+
+
 
 
