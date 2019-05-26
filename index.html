@@ -4,16 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Mi primer Juego</title>
 </head>
 <body>
-    <canvas id="canvas"
-        width= "500";
-        height ="500";
-        style =" border: 1px solid black"></canvas>
+    <h1>Jugando Ando MARLON </h1>
+    <div>
+        <canvas id="lienzo"
+            width= "700";
+            height ="500";
+            style =" border: 1px solid black"></canvas>
+        
+        <button id="boton">Iniciar ó Parar</button>
+        
+        <script>
+        var canvas= document.getElementById("lienzo");
+        var ctx= canvas.getContext('2d');
+        var estado= false;
+        var bucle;
+        var boton= document.getElementById("boton");
+        boton.addEventListener("click", iniciarParar);
     
-    <script>
-    alert("inicio del juego")
-    </script>
+        // pelota
+        var px= 0;
+        var py= 0;
+        var ptamano = 20;
+        var pxDir= 4;
+        var pyDir= 4;
+    
+        function dibujarPelota() {
+            // ctx.clearRect(0,0, canvas.width, canvas.height);
+            ctx.fillStyle = "red";
+            ctx.fillRect(px,py,ptamano,ptamano);
+            
+        };
+        function actualizarPelota () {
+            px+= pxDir;
+            py+= pyDir;
+            
+            // requestAnimationFrame(actualizarPelota)
+      
+        }
+        
+        // fin de pelota
+    
+        // mesa
+        var anchoMesa = 80;
+        var altoMesa = 20;
+        var mx= (canvas.width/2)- anchoMesa;
+        var my= (canvas.height)-altoMesa;
+    
+        function dibujarMesa() {
+            ctx.fillStyle = "blue";
+            ctx.fillRect(mx, my, anchoMesa, altoMesa);
+            
+        }
+        // fin de mesa
+    
+        function colision () {
+            if (px<=0 || px>= canvas.width - ptamano){pxDir *=-1;}
+            if (py<=0 || py>=canvas.height- ptamano){pyDir *=-1;}
+        };
+        function dibujar () {
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            dibujarPelota();
+            dibujarMesa();
+        };
+        function actualizar() {
+            actualizarPelota();
+        }
+     
+        function animation() {
+            actualizar ();
+            colision();
+            dibujar();
+            // x+= xDir;
+            // y+= yDir;
+            // if (x<=0 || x>=680){
+            //     xDir *=-1;
+            // }
+            // if (y<=0 || y>=480){
+            //     yDir *=-1;
+            // }
+            bucle = requestAnimationFrame(animation)
+            // setTimeout(animation,15)
+        }
+        function iniciarParar() {
+            if (!estado){
+                estado = true;
+                animation();
+            }else {
+                estado = false;
+                cancelAnimationFrame(bucle);
+            }
+        }
+        
+        // setInterval(animation, 15)
+    
+       </script>
+      
+    </div>
 </body>
 </html>
+
+
